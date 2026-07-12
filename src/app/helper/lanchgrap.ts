@@ -1,8 +1,8 @@
-import { StateGraph, MessagesAnnotation } from '@langchain/langgraph';
-import { ChatGroq } from '@langchain/groq';
-import { ToolNode } from '@langchain/langgraph/prebuilt';
-import { tool } from '@langchain/core/tools';
 import { AIMessage } from '@langchain/core/messages';
+import { tool } from '@langchain/core/tools';
+import { ChatGroq } from '@langchain/groq';
+import { MessagesAnnotation, StateGraph } from '@langchain/langgraph';
+import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { z } from 'zod';
 
 // ---------------------------------------------------------------------------
@@ -16,7 +16,7 @@ import { z } from 'zod';
 
 // 1. Define a tool. This is a plain function the AI is allowed to call.
 const getCurrentTime = tool(
-  async () => {
+  () => {
     return new Date().toISOString();
   },
   {
@@ -85,6 +85,7 @@ export const runLangchainGraph = async (prompt: string) => {
 
     return {
       prompt,
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       answer: String(lastMessage.content),
     };
   } catch {
