@@ -1,5 +1,5 @@
-import path from 'path';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config({ path: path.join(process.cwd(), '.env') });
 
@@ -42,6 +42,7 @@ export default {
     openaiApiKey: process.env.OPENAI_API_KEY,
     gminiApiKey: process.env.GMINI_API_KEY,
     xaiApiKey: process.env.XAI_API_KEY,
+    groqApikey: process.env.GROQ_API_KEY,
   },
 
   frontendUrl: process.env.FRONTEND_URL,

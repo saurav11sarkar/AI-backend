@@ -1,18 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
 import bcrypt from 'bcrypt';
 import config from 'src/app/config';
-import { IFilterParams } from 'src/app/helper/pick';
-import paginationHelper, { IOptions } from 'src/app/helper/pagenation';
 import buildWhereConditions from 'src/app/helper/buildWhereConditions';
+import paginationHelper, { IOptions } from 'src/app/helper/pagenation';
+import { IFilterParams } from 'src/app/helper/pick';
 import redisClient from 'src/app/utils/redisserver';
-import { generateAiText } from 'src/app/helper/openAi';
-import { generateGminiText } from 'src/app/helper/giminiAi';
-import { langingmini } from 'src/app/helper/lanchingimini';
-import { grokapi } from 'src/app/helper/grokapi';
-import { runGroqLangchain } from 'src/app/helper/groqLangChain';
-import { runLangchainGraph } from 'src/app/helper/lanchgrap';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { uploadPdf } from '../../helper/pdfUploade';
+import { llm } from '../../helper/rag';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -86,8 +82,12 @@ export class UserService {
     return response;
   }
 
-  async postAiInput( input: string) {
-    const result = await runLangchainGraph(input);
-    return result;
+  async postAiInput(input: string) {
+    const result = await llm.invoke(input);
+    await uploadPdf();
+    return {
+      content: result.content,
+      tokenUse: result.usage_metadata?.total_tokens,
+    };
   }
 }

@@ -1,18 +1,17 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
+  Get,
   HttpCode,
   HttpStatus,
-  Get,
+  Post,
   Req,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import pick from 'src/app/helper/pick';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UserService } from './user.service';
 
 @ApiTags('user')
 @Controller('user')
@@ -113,6 +112,9 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async postAiInput(@Body('input') input: string) {
     const result = await this.userService.postAiInput(input);
-    return result;
+    return {
+      message: 'Request successfully completed',
+      data: result,
+    };
   }
 }
