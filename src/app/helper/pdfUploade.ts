@@ -1,3 +1,4 @@
+import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { PDFParse } from 'pdf-parse';
@@ -9,6 +10,12 @@ export const uploadPdf = async () => {
   const pdf = new PDFParse({ data });
 
   const result = await pdf.getText();
-
-  return result;
+  const text = result.text;
+  const spiltter = new RecursiveCharacterTextSplitter({
+    chunkSize: 1000,
+    chunkOverlap: 200,
+  });
+  const docs = await spiltter.createDocuments([text]);
+  console.dir(docs, { depth: null });
+  return docs;
 };

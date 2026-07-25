@@ -43,6 +43,7 @@ export default {
     gminiApiKey: process.env.GMINI_API_KEY,
     xaiApiKey: process.env.XAI_API_KEY,
     groqApikey: process.env.GROQ_API_KEY,
+    googleApikey: process.env.GOOGLE_API_KEY,
   },
 
   frontendUrl: process.env.FRONTEND_URL,
