@@ -6,6 +6,7 @@ import paginationHelper, { IOptions } from 'src/app/helper/pagenation';
 import { IFilterParams } from 'src/app/helper/pick';
 import redisClient from 'src/app/utils/redisserver';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { vectorStore } from '../../helper/googlevectordb';
 import { uploadPdf } from '../../helper/pdfUploade';
 import { llm } from '../../helper/rag';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -82,9 +83,25 @@ export class UserService {
     return response;
   }
 
+  async uploadPdf(file: Express.Multer.File) {
+    if (!file)
+      throw new HttpException('pdf file is required', HttpStatus.BAD_REQUEST);
+
+    const result = await uploadPdf(file.buffer, file.originalname);
+
+    return result;
+  }
+
   async postAiInput(input: string) {
-    const result = await llm.invoke(input);
-    await uploadPdf();
+    const relevantDocs = await vectorStore.similaritySearch(input, 4);
+    const context = relevantDocs.map((doc) => doc.pageContent).join('\n\n');
+
+    const prompt = context
+      ? `Answer the question using the context below. If the context doesn't contain the answer, say you don't know.\n\nContext:\n${context}\n\nQuestion: ${input}`
+      : input;
+
+    const result = await llm.invoke(prompt);
+
     return {
       content: result.content,
       tokenUse: result.usage_metadata?.total_tokens,

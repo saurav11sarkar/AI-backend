@@ -44,6 +44,8 @@ export default {
     xaiApiKey: process.env.XAI_API_KEY,
     groqApikey: process.env.GROQ_API_KEY,
     googleApikey: process.env.GOOGLE_API_KEY,
+    qdrantApiKey: process.env.QDRANG_API_KEY,
+    qdrangEnpoind: process.env.QDRANG_ENPOINT,
   },
 
   frontendUrl: process.env.FRONTEND_URL,

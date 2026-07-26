@@ -6,8 +6,17 @@ import {
   HttpStatus,
   Post,
   Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { Request } from 'express';
 import pick from 'src/app/helper/pick';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -94,6 +103,30 @@ export class UserController {
       message: 'get all user successfully',
       meta: result.meta,
       data: result.data,
+    };
+  }
+
+  @Post('upload-pdf')
+  @ApiOperation({
+    summary: 'upload a pdf and index it into the vector store',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(HttpStatus.OK)
+  async uploadPdf(@UploadedFile() file: Express.Multer.File) {
+    const result = await this.userService.uploadPdf(file);
+
+    return {
+      message: 'pdf uploaded and indexed successfully',
+      data: result,
     };
   }
 
